@@ -10,7 +10,13 @@ from state_machine import StateMachine, time_out_idle, space_down, right_down, l
 class Idle:
     @staticmethod #이 뒤에 이어 오는 함수를 staticmethod 함수로 간주하겠다 >> 멤버 함수가 아닌, 객체와 상관 없는 함수 >> 클래스의 이름으로 함수를 그룹화
     def enter(boy, e):
-        # 현재 시간 저장
+        if time_out_autorun(e):
+            if boy.dir == 1:
+                boy.action = 3
+                boy.image_dir = 1
+            elif boy.dir == -1:
+                boy.action = 2
+                boy.image_dir = -1
         if left_up(e) or right_down(e):
             boy.image_dir = -1
             boy.action = 2
@@ -131,8 +137,12 @@ class AutoRun:
 
 
         boy.x += boy.dir * 10
-        if boy.x >= 800 or boy.x <= 0:
+        if boy.x >= 800 - 25:
             boy.dir *= -1
+            boy.action = 0
+        elif boy.x <= 0 + 25:
+            boy.dir *= -1
+            boy.action = 1
         boy.frame = (boy.frame + 1)%8
         pass
 
