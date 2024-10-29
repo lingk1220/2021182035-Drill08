@@ -1,7 +1,9 @@
 from pico2d import load_image, get_time
 
 
-from state_machine import StateMachine, time_out, space_down, right_down, left_down, right_up, left_up, start_event
+from state_machine import StateMachine, time_out_idle, space_down, right_down, left_down, right_up, left_up, \
+    start_event, \
+    time_out_autorun, a_down
 
 
 # 상태를 클래스를 통해서 정의함.
@@ -102,6 +104,32 @@ class Run:
                             boy.x, boy.y)
         pass
 
+class AutoRun:
+    @staticmethod
+    def enter(boy, e):
+        boy.autorun_start_time = get_time()
+        pass
+
+    @staticmethod
+    def exit(boy, e):
+
+        pass
+
+    @staticmethod
+    def do(boy):
+        if get_time() - boy.start_time > 3:
+            boy.state_machine.add_event(('TIME_OUT', 1))
+        boy.x += boy.dir * 5
+        boy.frame = (boy.frame + 1)%8
+        pass
+
+    @staticmethod
+    def draw(boy):
+        boy.image.clip_draw(boy.frame * 100, boy.action * 100, 100, 100,
+                            boy.x, boy.y)
+        pass
+
+
 class Boy:
     def __init__(self):
         self.x, self.y = 400, 90
@@ -114,9 +142,10 @@ class Boy:
         self.state_machine.start(Idle) # 초기 상태가 ???로 설정
         self.state_machine.set_transitions(
             {
-                Run: {right_down : Idle, right_up : Idle, left_down : Idle, left_up : Idle}, # Run 상태에서 어떤 event가 들어와도 처리하지 않겠다
-                Idle : { time_out : Sleep , right_down : Run, right_up : Idle, left_down : Run, left_up : Idle},
-                Sleep: { space_down : Idle, right_down : Run, right_up : Idle, left_down : Run, left_up : Idle}
+                Run: {right_down : Idle, right_up : Idle, left_down : Idle, left_up : Idle, a_down : AutoRun},
+                Idle : { time_out_idle : Sleep , right_down : Run, right_up : Idle, left_down : Run, left_up : Idle, a_down : AutoRun},
+                Sleep: { space_down : Idle, right_down : Run, right_up : Idle, left_down : Run, left_up : Idle, a_down : AutoRun},
+                AutoRun: {space_down: Idle, right_down: Run, right_up: Idle, left_down: Run, left_up: Idle, time_out_autorun : Idle}
 
             }
         )
