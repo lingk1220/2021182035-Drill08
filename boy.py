@@ -108,6 +108,15 @@ class AutoRun:
     @staticmethod
     def enter(boy, e):
         boy.autorun_start_time = get_time()
+        if boy.dir == 0:
+            boy.dir = boy.image_dir
+
+        print(boy.dir)
+        if boy.dir == 1:
+            boy.action = 1
+        elif boy.dir == -1:
+            boy.action = 0
+
         pass
 
     @staticmethod
@@ -119,14 +128,18 @@ class AutoRun:
     def do(boy):
         if get_time() - boy.autorun_start_time > 3:
             boy.state_machine.add_event(('TIME_OUT', 1))
-        boy.x += boy.dir * 5
+
+
+        boy.x += boy.dir * 10
+        if boy.x >= 800 or boy.x <= 0:
+            boy.dir *= -1
         boy.frame = (boy.frame + 1)%8
         pass
 
     @staticmethod
     def draw(boy):
-        boy.image.clip_draw(boy.frame * 100, boy.action * 100, 100, 100,
-                            boy.x, boy.y)
+        boy.image.clip_composite_draw(boy.frame * 100, boy.action * 100, 100, 100,0, '',
+                                        boy.x, boy.y + 30, 200, 200)
         pass
 
 
@@ -145,7 +158,7 @@ class Boy:
                 Run: {right_down : Idle, right_up : Idle, left_down : Idle, left_up : Idle, a_down : AutoRun},
                 Idle : { time_out_idle : Sleep , right_down : Run, right_up : Idle, left_down : Run, left_up : Idle, a_down : AutoRun},
                 Sleep: { space_down : Idle, right_down : Run, right_up : Idle, left_down : Run, left_up : Idle, a_down : AutoRun},
-                AutoRun: {space_down: Idle, right_down: Run, right_up: Idle, left_down: Run, left_up: Idle, time_out_autorun : Idle}
+                AutoRun: {space_down: Idle, right_down: Run, left_down: Run, time_out_autorun : Idle}
 
             }
         )
