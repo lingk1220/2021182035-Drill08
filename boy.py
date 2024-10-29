@@ -117,7 +117,7 @@ class AutoRun:
 
     @staticmethod
     def do(boy):
-        if get_time() - boy.start_time > 3:
+        if get_time() - boy.autorun_start_time > 3:
             boy.state_machine.add_event(('TIME_OUT', 1))
         boy.x += boy.dir * 5
         boy.frame = (boy.frame + 1)%8
