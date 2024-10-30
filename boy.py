@@ -165,10 +165,10 @@ class Boy:
         self.state_machine.start(Idle) # 초기 상태가 ???로 설정
         self.state_machine.set_transitions(
             {
-                Run: {right_down : Idle, right_up : Idle, left_down : Idle, left_up : Idle, a_down : AutoRun},
+                Run: {right_down : Idle, right_up : Idle, left_down : Idle, left_up : Idle},
                 Idle : { time_out_idle : Sleep , right_down : Run, right_up : Idle, left_down : Run, left_up : Idle, a_down : AutoRun},
-                Sleep: { space_down : Idle, right_down : Run, right_up : Idle, left_down : Run, left_up : Idle, a_down : AutoRun},
-                AutoRun: {space_down: Idle, right_down: Run, left_down: Run, time_out_autorun : Idle}
+                Sleep: {right_down : Run, right_up : Idle, left_down : Run, left_up : Idle, a_down : AutoRun},
+                AutoRun: {right_down: Run, left_down: Run, time_out_autorun : Idle}
 
             }
         )
